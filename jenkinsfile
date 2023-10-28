@@ -3,7 +3,7 @@ pipeline {
 
     parameters {
         booleanParam(name: 'autoApprove', defaultValue: false, description: 'Automatically run apply after generating plan?')
-        choice(name: 'action', choices: ['apply', 'destroy'], description: 'Select the action to perform')
+       // choice(name: 'action', choices: ['apply', 'destroy'], description: 'Select the action to perform')
     }
 
     environment {
@@ -29,7 +29,23 @@ pipeline {
                 sh 'terraform show -no-color tfplan > tfplan.txt'
             }
         }
-        stage('Apply / Destroy') {
+        stage('Approval') {
+           when {
+               not {
+                   equals expected: true, actual: params.autoApprove
+               }
+           }
+
+           steps {
+               script {
+                    def plan = readFile '/var/lib/jenkins/workspace/jenkins-terraform/tfplan.txt'
+                    input message: "Do you want to apply the plan?",
+                    parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
+               }
+           }
+       }
+
+        /*stage('Apply / Destroy') {
             steps {
                 script {
                     if (params.action == 'apply') {
@@ -47,7 +63,7 @@ pipeline {
                     }
                 }
             }
-        }
+        }*/
 
     }
 }
