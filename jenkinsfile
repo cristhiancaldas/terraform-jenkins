@@ -30,13 +30,14 @@ pipeline {
 
         stage('Terraform init') {
             steps { 
-                 sh 'pwd;cd terraform/terraform-jenkins ; terraform init -input=false'
+                 sh 'pwd;cd terraform ; terraform init -input=false'
             }
         }
         stage('Terraform Plan') {
             steps {
-                sh 'pwd;cd terraform/terraform-jenkins ; terraform plan -out tfplan'
-                sh 'pwd;cd terraform/terraform-jenkins ; terraform show -no-color tfplan > tfplan.txt'
+                sh 'pwd;cd terraform ; terraform plan -out tfplan'
+                sh 'pwd;cd terraform ; terraform show -no-color tfplan > tfplan.txt'
+                
             }
         }
         stage('Approval') {
@@ -48,7 +49,7 @@ pipeline {
 
            steps {
                script {
-                    def plan = readFile 'terraform/jenkins-terraform/tfplan.txt'
+                    def plan = readFile 'terraform/tfplan.txt'
                     input message: "Do you want to apply the plan?",
                     parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
                }
@@ -57,7 +58,7 @@ pipeline {
 
         stage('Apply') {
             steps {
-                    sh "pwd;cd terraform/JENKINS-TERRAFORM ; terraform apply -input=false tfplan"
+                    sh "pwd;cd terraform ; terraform apply -input=false tfplan"
             }
         }
 
