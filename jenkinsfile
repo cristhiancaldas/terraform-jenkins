@@ -14,7 +14,7 @@ pipeline {
         AWS_SECRET_ACCESS_KEY = credentials('aws_secret_access_key')
         AWS_DEFAULT_REGION    = 'us-east-1'
     }
-
+  
     stages {
         
         stage('Checkout') {
@@ -31,7 +31,6 @@ pipeline {
         stage('Terraform init') {
             steps { 
                  sh 'pwd;cd terraform/terraform-jenkins ; terraform init -input=false'
-                 //sh 'pwd; terraform init'
             }
         }
         stage('Terraform Plan') {
