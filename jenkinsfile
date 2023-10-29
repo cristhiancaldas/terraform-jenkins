@@ -1,5 +1,9 @@
 pipeline {
     agent any
+    options {
+                timestamps ()
+                ansiColor('xterm')
+            }
 
     parameters {
         booleanParam(name: 'autoApprove', defaultValue: false, description: 'Automatically run apply after generating plan?')
@@ -13,20 +17,28 @@ pipeline {
     }
 
     stages {
+        
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/cristhiancaldas/terraform-jenkins.git'
+             script{
+                    dir("terraform")
+                        {
+                           git branch: 'main', url: 'https://github.com/cristhiancaldas/terraform-jenkins.git'
+                        }
+                    }
             }
         }
+
         stage('Terraform init') {
-            steps {
-                sh 'terraform init'
+            steps { 
+                 sh 'pwd;cd terraform/terraform-jenkins ; terraform init -input=false'
+                 //sh 'pwd; terraform init'
             }
         }
         stage('Terraform Plan') {
             steps {
-                sh 'terraform plan -out tfplan'
-                sh 'terraform show -no-color tfplan > tfplan.txt'
+                sh 'pwd;cd terraform/terraform-jenkins ; terraform plan -out tfplan'
+                sh 'pwd;cd terraform/terraform-jenkins ; terraform show -no-color tfplan > tfplan.txt'
             }
         }
         stage('Approval') {
@@ -38,7 +50,7 @@ pipeline {
 
            steps {
                script {
-                    def plan = readFile '/var/lib/jenkins/workspace/jenkins-terraform/tfplan.txt'
+                    def plan = readFile 'terraform/jenkins-terraform/tfplan.txt'
                     input message: "Do you want to apply the plan?",
                     parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
                }
@@ -47,7 +59,7 @@ pipeline {
 
         stage('Apply') {
             steps {
-                sh " terraform apply -input=false tfplan"
+                    sh "pwd;cd terraform/JENKINS-TERRAFORM ; terraform apply -input=false tfplan"
             }
         }
 
