@@ -1,12 +1,12 @@
 variable "instance_name" {
-  description = "Name of ec2 instance"
+  description = "Name ec2 instance"
   type        = string
 }
 
 variable "ami" {
   description = "Amazon machine image to use for ec2 instance"
   type        = string
-  default     = "ami-0fc5d935ebf8bc3bc" # Ubuntu 20.04 LTS // us-east-1
+  default     = "ami-05c13eab67c5d8861" # amazon Linux
 }
 
 variable "instance_type" {
