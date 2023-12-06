@@ -1,6 +1,7 @@
 variable "instance_name" {
   description = "Name ec2 instance"
   type        = string
+  default     = "demoInstance" 
 }
 
 variable "ami" {
